@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Game.Interfaces;
 
 namespace Game
 {
-    public class Cell
+    public class Cell:ICell
     {
         public char tile { get; }
-        public Coords Coords { get; }
+        public ICoord Coords { get; }
         public ConsoleColor Color { get; }
         public Cell()
         {
             this.tile = '.';
-            this.Coords = new Coords();
+            this.Coords = Coord._default;
             Color = ConsoleColor.White;
         }
 
-        public Cell(char tile, Coords coords, ConsoleColor color)
+        public Cell(char tile, ICoord coords, ConsoleColor color)
         { 
             this.tile = tile;
             this.Coords = coords;

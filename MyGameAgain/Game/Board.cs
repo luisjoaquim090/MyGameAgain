@@ -1,15 +1,22 @@
 ﻿
+using Game.Interfaces;
+
 namespace Game
 {
-    public class Board
+    public class Board(string? name, int? x, int? y, int? z)
     {
-        public string Name { get; }
-        public Grid Default_grid { get; }
-        public Board(string? name, int? x, int? y, int? z ) {
-            Name = name??"Board";
-            Default_grid = new Grid(new Coords(x??1, y??1, z??1));
+        public string Name { get; } = name ?? "Board";
+        public IGrid Default_grid { get; } = new Grid(new Coord(x ?? 1, y ?? 1, z ?? 1));
+
+        public void Generate()
+        {
+            Default_grid.Generate();
         }
 
+        public void Run()
+        {
+            Default_grid.AddPlayer("Player", '+', ConsoleColor.DarkCyan);
+        }
 
         public void ToConsole()
         {
