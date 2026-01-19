@@ -2,13 +2,10 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/MyGameAgain/Game/bin/Debug/net9.0
+/MyGameAgain/Game/bin
 /MyGameAgain/Game/obj
-/MyGameAgain/Console/bin/Debug/net9.0
-/MyGameAgain/.vs/MyGameAgain/CopilotIndices/18.0.981.45449
-/MyGameAgain/.vs/MyGameAgain/DesignTimeBuild
-/MyGameAgain/.vs/MyGameAgain/FileContentIndex
-/MyGameAgain/.vs/MyGameAgain
+/MyGameAgain/Console/bin
+/MyGameAgain/.vs
 /.vs
 /MyGameAgain/Console/obj
 /MyGameAgain/Grid/obj
