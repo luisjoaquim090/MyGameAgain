@@ -22,7 +22,8 @@ namespace Game
         {
             AddCircle('^', ConsoleColor.DarkGray);
             AddCircle('~', ConsoleColor.DarkBlue);
-            AddRiver('~', ConsoleColor.Blue);
+            AddCircle('T', ConsoleColor.DarkGreen);
+            //AddRiver('~', ConsoleColor.Blue);
             AddSquare('#', 5, 5, ConsoleColor.DarkYellow);
 
             AddCell('ª', ConsoleColor.DarkRed);

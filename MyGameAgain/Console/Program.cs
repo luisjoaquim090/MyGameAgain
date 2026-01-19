@@ -8,7 +8,10 @@ internal class Program
         int? X = (int?)p_args.FirstOrDefault(e => e.Item1.Equals(Args.ArgTypes.gridX))?.Item2;
         int? Y = (int?)p_args.FirstOrDefault(e => e.Item1.Equals(Args.ArgTypes.gridY))?.Item2;
         int? Z = (int?)p_args.FirstOrDefault(e => e.Item1.Equals(Args.ArgTypes.gridZ))?.Item2;
-        var game_board = new Game.Board(title, X, Y, Z);
-        game_board.ToConsole();
+        do {
+            System.Console.Clear();
+            var game_board = new Game.Board(title, X, Y, Z);
+            game_board.ToConsole();
+        } while (System.Console.ReadKey().Key == ConsoleKey.R);
     }
 }
