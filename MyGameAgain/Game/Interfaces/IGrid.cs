@@ -5,7 +5,6 @@ namespace Game.Interfaces
     {
         ICoord MaxCoords { get; }
 
-        void AddPlayer(string Name, char tag, ConsoleColor color);
         void Generate();
 
         ICell? GetCell(ICoord coords);

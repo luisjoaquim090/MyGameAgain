@@ -13,6 +13,8 @@ namespace Game
         public int AttackDamage { get; }
         public char tile { get; }
 
+        public bool CanMove { get; }
+
         public ICoord Coords { get; private set; }
         public ConsoleColor Color { get; }
 
@@ -22,13 +24,13 @@ namespace Game
             Coords = Coord._default;
         }
 
-        public Peg(IPeg.PegType type, ICoord coords, string name)
+        public Peg(IPeg.PegType type, ICoord coords)
         {
             Type = type;
             Coords = coords;
         }
 
-        public Peg(IPeg.PegType type, ICoord coords, string name, char tile, ConsoleColor color) : this(type, coords, name)
+        public Peg(IPeg.PegType type, ICoord coords, char tile, ConsoleColor color) : this(type, coords)
         {
             this.tile = tile;
             Color = color;
@@ -36,7 +38,8 @@ namespace Game
 
         public void MoveTo(ICoord newCoords)
         {
-            Coords = newCoords;
+            if(CanMove)
+                Coords = newCoords;
         }
     }
 }

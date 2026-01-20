@@ -1,55 +1,71 @@
 ﻿
 using Game.Interfaces;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Game
 {
     public class Grid(ICoord maxCoords) : IGrid
     {
+        private static readonly char maxTile = (char)65535;
+        private static readonly char minTile = (char)0;
+
         public ICoord MaxCoords { get; } = maxCoords;
 
         private List<ICell> cells = [];
 
-        private readonly Cell _default = new('.', Coord._default, ConsoleColor.DarkGreen);
+        private readonly Cell _defaultCell = new('.', Coord._default, ConsoleColor.DarkGreen);
 
         public void Generate()
         {
             cells = [];
             Random _ = new();
-            int Hills = _.Next(3, 7);
+            int Hills = _.Next(1, 5);
             for (int i = 0; i < Hills; i++)
             {
-                AddCircle('^', ConsoleColor.DarkGray);
+                AddRandomCircle('^', ConsoleColor.DarkGray);
             }
-            int Forests = _.Next(3, 7);
+            int Forests = _.Next(1, 3);
             for (int i = 0; i < Forests; i++)
             {
-                AddCircle('T', ConsoleColor.DarkGreen);
+                AddRandomCircle('Y', ConsoleColor.DarkGreen);
             }
-            int Lakes = _.Next(2, 5);
+            int Lakes = _.Next(3, 5);
             for (int i = 0; i < Lakes; i++)
             {
-                AddCircle('~', ConsoleColor.DarkBlue);
+                AddRandomCircle('~', ConsoleColor.DarkBlue);
             }
             int Enemies = _.Next(3, 10);
             for (int i = 0; i < Enemies; i++)
             {
-                AddCell('ª', ConsoleColor.DarkRed);
+                AddRandomCell('ª', color: ConsoleColor.DarkRed);
             }
 
-            AddRiver('~', ConsoleColor.Blue);
-            AddRiver('~', ConsoleColor.Blue);
+            int rivers = _.Next(0, 2);
+            for (int i = 0; i < rivers; i++)
+            {
+                AddRandomMultiPointLine('~', ConsoleColor.Blue);
+            }
 
-            AddSquare('#', 5, 5, ConsoleColor.DarkYellow);
-            AddSquare('#', 5, 15, ConsoleColor.DarkYellow);
+            int towns = _.Next(1, 4);
+            for (int i = 0; i < towns; i++)
+            {
+                AddRandomSquare('A', ConsoleColor.White);
+            }
 
-            AddCell('H', ConsoleColor.DarkMagenta);
+            int fields = _.Next(2, 5);
+            for (int i = 0; i < fields; i++)
+            {
+                AddRandomSquare('#', ConsoleColor.DarkYellow);
+            }
 
-            AddPlayer("Hero", '+', ConsoleColor.Yellow);
+            AddRandomCell('H', color: ConsoleColor.DarkMagenta);
+
+            AddPeg("Hero", (char)0x2573, color: ConsoleColor.Yellow);
 
         }
 
-        private void AddRiver(char tile, ConsoleColor color = ConsoleColor.Blue)
+        private void AddRandomMultiPointLine(char tile, ConsoleColor color = ConsoleColor.White)
         {
             var _ = new Random();
             var midpoints = _.Next(2, 5);
@@ -64,14 +80,19 @@ namespace Game
 
             points.Add(new Coord(MaxCoords.X - 1, _.Next(0, MaxCoords.Y), 1));
 
+            AddMultiPointLine(tile, points, color);
+
+        }
+
+        private void AddMultiPointLine(char tile, List<ICoord> points, ConsoleColor color = ConsoleColor.White)
+        {
             for (int i = 0; i < points.Count - 1; i++)
             {
                 AddLine(tile, points[i], points[i + 1], color);
             }
-
         }
 
-        private void AddLine(char tile, ICoord start, ICoord end,ConsoleColor color = ConsoleColor.Blue)
+        private void AddLine(char tile, ICoord start, ICoord end, ConsoleColor color = ConsoleColor.White)
         {
             int movesX = end.X - start.X;
             int movesY = end.Y - start.Y;
@@ -85,19 +106,24 @@ namespace Game
 
         }
 
-        private void AddCircle(char tile, ConsoleColor color = ConsoleColor.Gray)
+        private void AddRandomCircle(char tile, ConsoleColor color = ConsoleColor.White)
         {
             var _ = new Random();
             ICoord center = new Coord(_.Next(0, MaxCoords.X), _.Next(0, MaxCoords.Y), _.Next(0, MaxCoords.Z));
             int minRad = Math.Min(MaxCoords.X, MaxCoords.Y);
             int radius = _.Next(1, minRad / _.Next(1, minRad));
+            AddCircle(tile, center, radius, color);
+        }
+
+        private void AddCircle(char tile, ICoord center, int radius, ConsoleColor color = ConsoleColor.White)
+        {
             for (int x = center.X - radius; x <= center.X + radius; x++)
             {
                 for (int y = center.Y - radius; y <= center.Y + radius; y++)
                 {
                     if (x >= 0 && x < MaxCoords.X && y >= 0 && y < MaxCoords.Y)
                     {
-                        double distance = Math.Sqrt(Math.Pow(x - center.X, 2 ) + Math.Pow(y - center.Y, 2));
+                        double distance = Math.Sqrt(Math.Pow(x - center.X, 2) + Math.Pow(y - center.Y, 2));
                         if (distance <= radius)
                         {
                             AddCell(tile, new Coord(x, y, 1), color);
@@ -107,10 +133,17 @@ namespace Game
             }
         }
 
-        private void AddSquare(char tile, int sizeX, int sizeY, ConsoleColor color = ConsoleColor.Gray)
+        private void AddRandomSquare(char tile, ConsoleColor color = ConsoleColor.White)
         {
             var _ = new Random();
+            int sizeX = _.Next(2, MaxCoords.X / 4);
+            int sizeY = _.Next(2, MaxCoords.Y / 4);
             ICoord topLeft = new Coord(_.Next(0, MaxCoords.X - sizeX), _.Next(0, MaxCoords.Y - sizeY), _.Next(0, MaxCoords.Z));
+            AddSquare(tile, topLeft, sizeX, sizeY, color);
+        }
+
+        private void AddSquare(char tile, ICoord topLeft, int sizeX, int sizeY, ConsoleColor color = ConsoleColor.White)
+        {
             for (int x = topLeft.X; x < topLeft.X + sizeX; x++)
             {
                 for (int y = topLeft.Y; y < topLeft.Y + sizeY; y++)
@@ -126,7 +159,16 @@ namespace Game
             return cell;
         }
 
-        private ICell AddCell(char tile, ICoord coords, ConsoleColor color)
+        private void RemoveCell(ICoord coords)
+        {
+            ICell? cell = GetCell(coords);
+            if (cell != null)
+            {
+                cells.Remove(cell);
+            }
+        }
+
+        private ICell AddCell(char tile, ICoord coords, ConsoleColor color = ConsoleColor.White)
         {
 
             ICell cell = new Cell(tile, coords, color);
@@ -134,9 +176,9 @@ namespace Game
             return cell;
         }
 
-        private ICell AddCell(char tile, ConsoleColor color)
+        private ICell AddRandomCell(char tile, int depth = 0, int maxdepth = 10, ConsoleColor color = ConsoleColor.White)
         {
-            
+
             Coord coords = GenCoords();
             if (GetCell(coords) == null)
             {
@@ -144,7 +186,10 @@ namespace Game
             }
             else
             {
-                return AddCell(tile, color);
+                if (depth <= maxdepth)
+                    return AddRandomCell(tile, depth++, maxdepth, color);
+                else
+                    return _defaultCell;
             }
         }
 
@@ -189,24 +234,29 @@ namespace Game
                 }
                 else
                 {
-                    Console.ForegroundColor = _default.Color;
-                    Console.Write(_default.tile);
+                    Console.ForegroundColor = _defaultCell.Color;
+                    Console.Write(_defaultCell.tile);
                     Console.ResetColor();
                 }
             }
         }
 
-        public void AddPlayer(string Name, char tile, ConsoleColor color)
+        public void AddPeg(string Name, char tile, int depth = 0, int maxdepth = 10, ConsoleColor color = ConsoleColor.White)
         {
             Coord coord = GenCoords();
             if (GetCell(coord) == null)
             {
-                Peg player = new(IPeg.PegType.Player, coord, Name, tile, color);
-                AddCell(player);
+                AddCell(new Peg(IPeg.PegType.Player, coord, tile, color));
             }
             else
             {
-                AddPlayer(Name, tile, color);
+                if (depth <= maxdepth)
+                    AddPeg(Name, tile, depth++, maxdepth, color);
+                else
+                {
+                    RemoveCell(coord);
+                    AddCell(new Peg(IPeg.PegType.Player, coord, tile, color));
+                }
             }
         }
     }

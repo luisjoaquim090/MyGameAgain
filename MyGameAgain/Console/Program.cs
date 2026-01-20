@@ -1,6 +1,7 @@
 ﻿using Console.Utils;
 internal class Program
 {
+    
     private static void Main(string[] args)
     {
         var p_args = Args.ProcessArgs(args);
@@ -9,6 +10,9 @@ internal class Program
         int? Y = (int?)p_args.FirstOrDefault(e => e.Item1.Equals(Args.ArgTypes.gridY))?.Item2;
         int? Z = (int?)p_args.FirstOrDefault(e => e.Item1.Equals(Args.ArgTypes.gridZ))?.Item2;
         var game_board = new Game.Board(title, X, Y, Z);
+
+        System.Console.OutputEncoding = System.Text.Encoding.Unicode;
+
         do {
             System.Console.Clear();
             game_board.Generate();
