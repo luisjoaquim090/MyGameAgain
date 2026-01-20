@@ -1,43 +1,47 @@
 ﻿
 using Game.Interfaces;
+using System.Drawing;
 
 namespace Game
 {
-    public class Grid:IGrid
+    public class Grid(ICoord maxCoords) : IGrid
     {
-        public ICoord MaxCoords { get; }
+        public ICoord MaxCoords { get; } = maxCoords;
 
-        private List<ICell> cells;
+        private List<ICell> cells = [];
 
-        private ICell defaultCell;
-
-        public Grid(ICoord maxCoords)
-        {
-            MaxCoords = maxCoords;
-            cells = [];
-            defaultCell = new Cell('.', Coord._default, ConsoleColor.DarkGreen);
-        }
+        private readonly Cell _default = new('.', Coord._default, ConsoleColor.DarkGreen);
 
         public void Generate()
         {
             cells = [];
-            AddCircle('^', ConsoleColor.DarkGray);
-            AddCircle('^', ConsoleColor.DarkGray);
-            AddCircle('^', ConsoleColor.DarkGray);
-            AddCircle('~', ConsoleColor.DarkBlue);
-            AddCircle('T', ConsoleColor.DarkGreen);
-            AddCircle('T', ConsoleColor.DarkGreen);
-            AddCircle('T', ConsoleColor.DarkGreen);
+            Random _ = new();
+            int Hills = _.Next(3, 7);
+            for (int i = 0; i < Hills; i++)
+            {
+                AddCircle('^', ConsoleColor.DarkGray);
+            }
+            int Forests = _.Next(3, 7);
+            for (int i = 0; i < Forests; i++)
+            {
+                AddCircle('T', ConsoleColor.DarkGreen);
+            }
+            int Lakes = _.Next(2, 5);
+            for (int i = 0; i < Lakes; i++)
+            {
+                AddCircle('~', ConsoleColor.DarkBlue);
+            }
+            int Enemies = _.Next(3, 10);
+            for (int i = 0; i < Enemies; i++)
+            {
+                AddCell('ª', ConsoleColor.DarkRed);
+            }
+
+            AddRiver('~', ConsoleColor.Blue);
+            AddRiver('~', ConsoleColor.Blue);
+
             AddSquare('#', 5, 5, ConsoleColor.DarkYellow);
             AddSquare('#', 5, 15, ConsoleColor.DarkYellow);
-
-            AddCell('ª', ConsoleColor.DarkRed);
-            AddCell('ª', ConsoleColor.DarkRed);
-            AddCell('ª', ConsoleColor.DarkRed);
-
-            AddCell('T', ConsoleColor.Green);
-            AddCell('T', ConsoleColor.Green);
-            AddCell('T', ConsoleColor.Green);
 
             AddCell('H', ConsoleColor.DarkMagenta);
 
@@ -48,8 +52,27 @@ namespace Game
         private void AddRiver(char tile, ConsoleColor color = ConsoleColor.Blue)
         {
             var _ = new Random();
-            ICoord start = new Coord(_.Next(0, MaxCoords.X), _.Next(0, MaxCoords.Y), _.Next(0, MaxCoords.Z));
-            ICoord end = new Coord(_.Next(0, MaxCoords.X), _.Next(0, MaxCoords.Y), _.Next(0, MaxCoords.Z));
+            var midpoints = _.Next(2, 5);
+            List<ICoord> points = [];
+            points.Add(new Coord(0, _.Next(0, MaxCoords.Y), 1));
+
+            for (int i = 1; i < midpoints; i++)
+            {
+                ICoord mid = new Coord(_.Next(MaxCoords.X / midpoints * i, MaxCoords.X / midpoints * (i + 1)), _.Next(0, MaxCoords.Y), 1);
+                points.Add(mid);
+            }
+
+            points.Add(new Coord(MaxCoords.X - 1, _.Next(0, MaxCoords.Y), 1));
+
+            for (int i = 0; i < points.Count - 1; i++)
+            {
+                AddLine(tile, points[i], points[i + 1], color);
+            }
+
+        }
+
+        private void AddLine(char tile, ICoord start, ICoord end,ConsoleColor color = ConsoleColor.Blue)
+        {
             int movesX = end.X - start.X;
             int movesY = end.Y - start.Y;
             int steps = Math.Max(Math.Abs(movesX), Math.Abs(movesY));
@@ -166,8 +189,8 @@ namespace Game
                 }
                 else
                 {
-                    Console.ForegroundColor = defaultCell.Color;
-                    Console.Write(defaultCell.tile);
+                    Console.ForegroundColor = _default.Color;
+                    Console.Write(_default.tile);
                     Console.ResetColor();
                 }
             }
