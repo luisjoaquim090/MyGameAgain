@@ -12,7 +12,6 @@ internal class Program
         do {
             System.Console.Clear();
             game_board.Generate();
-            game_board.Run();
             game_board.ToConsole();
         } while (System.Console.ReadKey().Key == ConsoleKey.R);
     }

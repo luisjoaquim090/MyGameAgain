@@ -13,11 +13,6 @@ namespace Game
             Default_grid.Generate();
         }
 
-        public void Run()
-        {
-            Default_grid.AddPlayer("Player", '+', ConsoleColor.DarkCyan);
-        }
-
         public void ToConsole()
         {
             //Header

@@ -21,25 +21,27 @@ namespace Game
         public void Generate()
         {
             cells = [];
-            //AddCircle('^', ConsoleColor.DarkGray);
-            //AddCircle('^', ConsoleColor.DarkGray);
-            //AddCircle('^', ConsoleColor.DarkGray);
-            //AddCircle('~', ConsoleColor.DarkBlue);
-            //AddCircle('T', ConsoleColor.DarkGreen);
-            //AddCircle('T', ConsoleColor.DarkGreen);
-            //AddCircle('T', ConsoleColor.DarkGreen);
-            //AddSquare('#', 5, 5, ConsoleColor.DarkYellow);
-            //AddSquare('#', 5, 15, ConsoleColor.DarkYellow);
+            AddCircle('^', ConsoleColor.DarkGray);
+            AddCircle('^', ConsoleColor.DarkGray);
+            AddCircle('^', ConsoleColor.DarkGray);
+            AddCircle('~', ConsoleColor.DarkBlue);
+            AddCircle('T', ConsoleColor.DarkGreen);
+            AddCircle('T', ConsoleColor.DarkGreen);
+            AddCircle('T', ConsoleColor.DarkGreen);
+            AddSquare('#', 5, 5, ConsoleColor.DarkYellow);
+            AddSquare('#', 5, 15, ConsoleColor.DarkYellow);
 
-            //AddCell('ª', ConsoleColor.DarkRed);
-            //AddCell('ª', ConsoleColor.DarkRed);
-            //AddCell('ª', ConsoleColor.DarkRed);
+            AddCell('ª', ConsoleColor.DarkRed);
+            AddCell('ª', ConsoleColor.DarkRed);
+            AddCell('ª', ConsoleColor.DarkRed);
 
-            //AddCell('T', ConsoleColor.Green);
-            //AddCell('T', ConsoleColor.Green);
-            //AddCell('T', ConsoleColor.Green);
+            AddCell('T', ConsoleColor.Green);
+            AddCell('T', ConsoleColor.Green);
+            AddCell('T', ConsoleColor.Green);
 
-            //AddCell('H', ConsoleColor.DarkMagenta);
+            AddCell('H', ConsoleColor.DarkMagenta);
+
+            AddPlayer("Hero", '+', ConsoleColor.Yellow);
 
         }
 
@@ -112,10 +114,10 @@ namespace Game
         private ICell AddCell(char tile, ConsoleColor color)
         {
             
-            GenCoords(out int x, out int y, out int z);
-            if (GetCell(new Coord(x, y, z)) == null)
+            Coord coords = GenCoords();
+            if (GetCell(coords) == null)
             {
-                return AddCell(tile, new Coord(x, y, z), color);
+                return AddCell(tile, coords, color);
             }
             else
             {
@@ -123,12 +125,13 @@ namespace Game
             }
         }
 
-        private void GenCoords(out int x, out int y, out int z)
+        private Coord GenCoords()
         {
             Random rand = new();
-            x = rand.Next(1, MaxCoords.X);
-            y = rand.Next(1, MaxCoords.Y);
-            z = rand.Next(1, MaxCoords.Z);
+            int x = rand.Next(1, MaxCoords.X);
+            int y = rand.Next(1, MaxCoords.Y);
+            int z = rand.Next(1, MaxCoords.Z);
+            return new(x, y, z);
         }
 
         public ICell? GetCell(ICoord coords)
@@ -172,10 +175,10 @@ namespace Game
 
         public void AddPlayer(string Name, char tile, ConsoleColor color)
         {
-            GenCoords(out int x, out int y, out int z);
-            if (GetCell(new Coord(x, y, z)) == null)
+            Coord coord = GenCoords();
+            if (GetCell(coord) == null)
             {
-                Peg player = new(IPeg.PegType.Player, Coord._default, Name, tile, color);
+                Peg player = new(IPeg.PegType.Player, coord, Name, tile, color);
                 AddCell(player);
             }
             else

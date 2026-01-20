@@ -4,8 +4,6 @@ namespace Game
 {
     public class Peg : ICell, IPeg
     {
-        private char tag;
-
         public IPeg.PegType Type { get; }
 
         public int Health { get; }
@@ -30,9 +28,9 @@ namespace Game
             Coords = coords;
         }
 
-        public Peg(IPeg.PegType type, ICoord coords, string name, char tag, ConsoleColor color) : this(type, coords, name)
+        public Peg(IPeg.PegType type, ICoord coords, string name, char tile, ConsoleColor color) : this(type, coords, name)
         {
-            this.tag = tag;
+            this.tile = tile;
             Color = color;
         }
 
